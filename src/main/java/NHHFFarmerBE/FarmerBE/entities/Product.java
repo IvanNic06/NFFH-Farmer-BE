@@ -12,25 +12,25 @@ public class Product {
     @Column(nullable = false)
     private Integer id;
     
-    @Column(name = "title", unique = true, length = 200, nullable = false)
+    @Column(name = "title", length = 200, nullable = false)
     private String title;
 
-    @Column(name = "seller", unique = true, length = 200, nullable = false)
+    @Column(name = "seller", length = 200, nullable = false)
     private String seller;
 
-    @Column(name = "image", unique = true, length = 200, nullable = false)
+    @Column(name = "image", length = 200, nullable = false)
     private String image;
 
-    @Column(name = "description", unique = true, nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "price", unique = true, length = 200, nullable = false)
+    @Column(name = "price", length = 200, nullable = false)
     private String price;
 
-    @Column(name = "weight", unique = true, length = 200, nullable = false)
+    @Column(name = "weight", length = 200, nullable = false)
     private String weight;
 
-    @Column(name = "availability", unique = true, length = 200, nullable = false)
+    @Column(name = "availability", length = 200, nullable = false)
     private Boolean availability = true;
 
     public Integer getId() {

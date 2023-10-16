@@ -38,5 +38,16 @@ public class FarmerService implements IFarmerService{
         this.farmerRepository.findAll().forEach(areaList::add);
         return areaList;
     }
+
+    @Override
+    public Optional<Farmer> findById(int id) {
+        return farmerRepository.findById(id);
+    }
+
+    @Override
+    public List<Farmer> findByArea(String area){
+        return farmerRepository.findByArea(area);
+    }
+
 }
 

@@ -10,4 +10,8 @@ public interface IFarmerService {
     List<Farmer> findAll();
     
     void delete(int id);
+
+    Optional<Farmer> findById(int id); 
+
+    List<Farmer> findByArea(String Area);
 }

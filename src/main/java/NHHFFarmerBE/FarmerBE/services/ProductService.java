@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import NHHFFarmerBE.FarmerBE.entities.Farmer;
 import NHHFFarmerBE.FarmerBE.entities.Product;
 import NHHFFarmerBE.FarmerBE.repositories.ProductRepository;
 
@@ -38,4 +39,15 @@ public class ProductService implements IProductService{
         this.productRepository.findAll().forEach(areaList::add);
         return areaList;
     }
+
+    @Override
+    public List<Product> getProductBySeller(String seller){
+        return productRepository.findBySeller(seller);
+    }
+
+    @Override
+    public Optional<Product> findById(int id) {
+        return productRepository.findById(id);
+    }
+
 }

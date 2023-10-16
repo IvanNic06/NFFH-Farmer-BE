@@ -20,16 +20,16 @@ public class Farmer {
     @Column(name = "email", unique = true, length = 200, nullable = false)
     private String email;
 
-    @Column(name = "password", unique = true, length = 200, nullable = false)
+    @Column(name = "password", length = 200, nullable = false)
     private String password;
 
-    @Column(name = "image", unique = true, nullable = false)
+    @Column(name = "image", nullable = false)
     private String image;
 
-    @Column(name = "area", unique = true, length = 200, nullable = false)
+    @Column(name = "area", length = 200, nullable = false)
     private String area;
 
-    @Column(name = "address", unique = true, length = 200, nullable = false)
+    @Column(name = "address", length = 200, nullable = false)
     private String address;
 
     public Integer getId() {
