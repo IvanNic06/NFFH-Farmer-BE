@@ -14,4 +14,8 @@ public interface IFarmerService {
     Optional<Farmer> findById(int id); 
 
     List<Farmer> findByArea(String Area);
+
+    Farmer findByEmail(String email);
+
+    Farmer findByUsername(String username);
 }

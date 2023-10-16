@@ -1,17 +1,22 @@
 package NHHFFarmerBE.FarmerBE.controller;
 
+
 import NHHFFarmerBE.FarmerBE.entities.Area;
 import NHHFFarmerBE.FarmerBE.entities.Farmer;
 import NHHFFarmerBE.FarmerBE.entities.Product;
 import NHHFFarmerBE.FarmerBE.models.AreaPageProductResponse;
+import NHHFFarmerBE.FarmerBE.models.LoginResponse;
 import NHHFFarmerBE.FarmerBE.models.SellerPageProductResponse;
 import NHHFFarmerBE.FarmerBE.requests.CreateAreaInput;
 import NHHFFarmerBE.FarmerBE.requests.CreateFarmerInput;
+import NHHFFarmerBE.FarmerBE.requests.LoginInput;
 import NHHFFarmerBE.FarmerBE.services.AreaService;
 import NHHFFarmerBE.FarmerBE.services.FarmerService;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.hibernate.mapping.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,5 +85,49 @@ public class FarmerController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
         }
+
+
+    @PostMapping("/farmer/signup")
+    public ResponseEntity<Boolean> signUp(@RequestBody CreateFarmerInput createFarmerInput){
+        
+        Farmer createdFarmer = createFarmerInput.toFarmer();
+        
+        farmerService.create(createdFarmer);
+
+        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }
+
+    /*   SignUp
+      
+	    "username" : "Luciano_Moggi",
+        "email" : "arbitroChiuso@nelloSpogliatoio.com",
+        "password" : "Juventus <3",
+        "image" : "cazzo",
+        "area" : "torino",
+        "address" : "via ladri dio cane"
+	}
+     */
+
+
+
+    @PostMapping("/farmer/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginInput email){
+        
+        String mail = email.ToStringEmail();
+
+        Farmer farmer = farmerService.findByEmail(mail);
+
+        LoginResponse response = new LoginResponse(farmer.getPassword());
+        
+        return new ResponseEntity<LoginResponse>(response, HttpStatus.OK);
+
+        }
+
+    /*  Login
+
+        {
+            "email" : "{mail}"
+        }
+    */
+}
 

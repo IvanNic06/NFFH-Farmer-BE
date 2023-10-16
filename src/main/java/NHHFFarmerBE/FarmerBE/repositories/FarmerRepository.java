@@ -16,6 +16,10 @@ public interface FarmerRepository extends JpaRepository<Farmer, Integer> {
 
     List<Farmer> findByArea(String Area);
 
+    Farmer findByemail(String email);
+
+    Farmer findByUsername(String username);
+
 }
 
 

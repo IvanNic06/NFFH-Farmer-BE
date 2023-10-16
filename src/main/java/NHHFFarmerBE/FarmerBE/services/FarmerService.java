@@ -49,5 +49,13 @@ public class FarmerService implements IFarmerService{
         return farmerRepository.findByArea(area);
     }
 
+    public Farmer findByEmail(String email){
+        return farmerRepository.findByemail(email);
+    }
+
+    public Farmer findByUsername(String username){
+        return farmerRepository.findByUsername(username);
+    }
+
 }
 
