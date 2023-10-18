@@ -7,6 +7,7 @@ import NHHFFarmerBE.FarmerBE.entities.Product;
 import NHHFFarmerBE.FarmerBE.models.AreaPageProductResponse;
 import NHHFFarmerBE.FarmerBE.models.LoginResponse;
 import NHHFFarmerBE.FarmerBE.models.SellerPageProductResponse;
+import NHHFFarmerBE.FarmerBE.models.SignupResponse;
 import NHHFFarmerBE.FarmerBE.requests.CreateAreaInput;
 import NHHFFarmerBE.FarmerBE.requests.CreateFarmerInput;
 import NHHFFarmerBE.FarmerBE.requests.LoginInput;
@@ -35,10 +36,10 @@ public class FarmerController {
     // ADD A FARMER
 
     @PostMapping("/farmer")
-    public ResponseEntity<Farmer> createFarmer(@RequestBody CreateFarmerInput createFarmerInput) {
+    public ResponseEntity<SignupResponse> createFarmer(@RequestBody CreateFarmerInput createFarmerInput) {
         Farmer createdFarmer = farmerService.create(createFarmerInput.toFarmer());
 
-        return new ResponseEntity<>(createdFarmer, HttpStatus.CREATED);
+        return new ResponseEntity<>(new SignupResponse(createdFarmer), HttpStatus.CREATED);
     }
 
     // GET ALL FARMERS
