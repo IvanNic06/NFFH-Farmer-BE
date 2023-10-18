@@ -6,6 +6,7 @@ import NHHFFarmerBE.FarmerBE.entities.Farmer;
 import NHHFFarmerBE.FarmerBE.entities.Product;
 import NHHFFarmerBE.FarmerBE.models.AreaPageProductResponse;
 import NHHFFarmerBE.FarmerBE.models.CreateFarmerResponse;
+import NHHFFarmerBE.FarmerBE.models.GetFarmerLightResponse;
 import NHHFFarmerBE.FarmerBE.models.LoginResponse;
 import NHHFFarmerBE.FarmerBE.models.SellerPageProductResponse;
 import NHHFFarmerBE.FarmerBE.models.SignupResponse;
@@ -66,7 +67,7 @@ public class FarmerController {
     }
 
     @GetMapping("farmerLight/{id}")
-    public ResponseEntity<CreateFarmerResponse> getFarmerByIDLIGHT(@PathVariable int id) {
+    public ResponseEntity<GetFarmerLightResponse> getFarmerByIDLIGHT(@PathVariable int id) {
         Optional<Farmer> Optionalfarmer = farmerService.findById(id);
         Farmer farmer;
 
@@ -78,9 +79,9 @@ public class FarmerController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        CreateFarmerResponse response = new CreateFarmerResponse(String.valueOf(farmer.getId()), farmer.getUsername());
+        GetFarmerLightResponse response = new GetFarmerLightResponse(String.valueOf(farmer.getId()), farmer.getUsername(), farmer.getImage(), farmer.getArea(), farmer.getAddress());
 
-        return new ResponseEntity<CreateFarmerResponse>(response, HttpStatus.OK);
+        return new ResponseEntity<GetFarmerLightResponse>(response, HttpStatus.OK);
 
     }
 
