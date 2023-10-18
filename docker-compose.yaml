@@ -28,13 +28,19 @@ services:
     networks:
       - gateway
       - internal
+      - auth
 
 networks:
   gateway:
     external: true
-    name: farmer-be
+    name: g-farmer-be
+  auth:
+    external: true
+    name: a-farmer-be
   internal:
     external: false
+
+
 volumes:
   farmer-mysql-data:
       
