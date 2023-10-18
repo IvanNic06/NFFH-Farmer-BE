@@ -5,6 +5,7 @@ import NHHFFarmerBE.FarmerBE.entities.Area;
 import NHHFFarmerBE.FarmerBE.entities.Farmer;
 import NHHFFarmerBE.FarmerBE.entities.Product;
 import NHHFFarmerBE.FarmerBE.models.AreaPageProductResponse;
+import NHHFFarmerBE.FarmerBE.models.CreateFarmerResponse;
 import NHHFFarmerBE.FarmerBE.models.LoginResponse;
 import NHHFFarmerBE.FarmerBE.models.SellerPageProductResponse;
 import NHHFFarmerBE.FarmerBE.models.SignupResponse;
@@ -53,8 +54,8 @@ public class FarmerController {
 
     //  GET FARMER BY ID 
 
-    @GetMapping("farmer/{id}")
-    public ResponseEntity<Farmer> getFarmerByID(@PathVariable int id) {
+    @GetMapping("farmerFull/{id}")
+    public ResponseEntity<Farmer> getFarmerByIDFULL(@PathVariable int id) {
         Optional<Farmer> farmer = farmerService.findById(id);
 
         if (farmer.isPresent()) {
@@ -62,6 +63,25 @@ public class FarmerController {
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("farmerLight/{id}")
+    public ResponseEntity<CreateFarmerResponse> getFarmerByIDLIGHT(@PathVariable int id) {
+        Optional<Farmer> Optionalfarmer = farmerService.findById(id);
+        Farmer farmer;
+
+
+        if (Optionalfarmer.isPresent()) {
+            farmer = Optionalfarmer.get();
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        CreateFarmerResponse response = new CreateFarmerResponse(String.valueOf(farmer.getId()), farmer.getUsername());
+
+        return new ResponseEntity<CreateFarmerResponse>(response, HttpStatus.OK);
+
     }
 
     // DELETE A FARMER BY ID
@@ -77,12 +97,33 @@ public class FarmerController {
     // FIND FARMER BY AREA
     @GetMapping("farmer/areas")
     public ResponseEntity<AreaPageProductResponse> getFarmerByAreaPage(@RequestParam String area, int page) {
-        int pageSize = 1;
+        int pageSize = 2;
         List<Farmer> farmerList = farmerService.findByArea(area);
-        List<Farmer> SubList = farmerList.subList((page-1) * pageSize, page * pageSize);
+
+        if (farmerList.isEmpty()){
+            return new ResponseEntity<AreaPageProductResponse>(null, null, HttpStatus.NOT_FOUND);
+        }
+
+        List<Farmer> SubList;
         int totalPageNumber = (int) Math.ceil((double) farmerList.size()/pageSize);
 
-        AreaPageProductResponse response = new AreaPageProductResponse(farmerList, pageSize, totalPageNumber);
+        if (page > totalPageNumber){
+            return new ResponseEntity<AreaPageProductResponse>(null, null, HttpStatus.NOT_FOUND);
+
+        }
+        
+        if (page == totalPageNumber && totalPageNumber % pageSize != 0){
+            SubList = farmerList.subList((page-1) * pageSize, page * pageSize - (page * pageSize - (farmerList.size() % pageSize)));
+        }
+        
+        else{
+            SubList = farmerList.subList((page-1) * pageSize, page * pageSize);
+        }
+
+
+        
+
+        AreaPageProductResponse response = new AreaPageProductResponse(SubList, page, totalPageNumber);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
         }

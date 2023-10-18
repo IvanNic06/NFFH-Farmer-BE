@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import NHHFFarmerBE.FarmerBE.entities.Farmer;
 import NHHFFarmerBE.FarmerBE.entities.Product;
+import NHHFFarmerBE.FarmerBE.models.AreaPageProductResponse;
+import NHHFFarmerBE.FarmerBE.models.CreateProductResponse;
 import NHHFFarmerBE.FarmerBE.models.ModifyProductResponse;
 import NHHFFarmerBE.FarmerBE.models.SellerPageProductResponse;
 import NHHFFarmerBE.FarmerBE.requests.CreateProductInput;
@@ -34,10 +36,12 @@ public class ProductController {
     //Add an area 
 
     @PostMapping("/products")
-    public ResponseEntity<Product> createTask(@RequestBody CreateProductInput createProductInput) {
+    public ResponseEntity<CreateProductResponse> createTask(@RequestBody CreateProductInput createProductInput) {
         Product createdProduct = productService.create(createProductInput.toProduct());
 
-        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
+        CreateProductResponse response = new CreateProductResponse(String.valueOf(createdProduct.getId()), createdProduct.getTitle());
+
+        return new ResponseEntity<CreateProductResponse>(response, HttpStatus.CREATED);
     }
 
 
@@ -77,16 +81,37 @@ public class ProductController {
 
     @GetMapping("/products")
     public ResponseEntity<SellerPageProductResponse> getProductBySellerPage(@RequestParam String seller, int page){
-        int pageSize = 2;
+        
+        int pageSize = 1;
         List<Product> productList = productService.getProductBySeller(seller);
-        List<Product> SubList = productList.subList((page-1) * pageSize, page * pageSize);
 
+        if (productList.isEmpty()){
+            return new ResponseEntity<SellerPageProductResponse>(null, null, HttpStatus.NOT_FOUND);
+        }
+
+        List<Product> SubList;
         int totalPageNumber = (int) Math.ceil((double) productList.size()/pageSize);
+
+        if (page > totalPageNumber){
+            return new ResponseEntity<SellerPageProductResponse>(null, null, HttpStatus.NOT_FOUND);
+
+        }
+        
+        if (page == totalPageNumber && totalPageNumber % pageSize != 0){
+            SubList = productList.subList((page-1) * pageSize, page * pageSize - (page * pageSize - (productList.size() % pageSize)));
+        }
+
+        else{
+            SubList = productList.subList((page-1) * pageSize, page * pageSize);
+        }
+
+        
 
         SellerPageProductResponse response = new SellerPageProductResponse(SubList, page, totalPageNumber);
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<SellerPageProductResponse>(response, HttpStatus.OK);
     }
+
 
     @PostMapping("/modifyproduct")
     public ResponseEntity<ModifyProductResponse> modifyProductById(@RequestParam String id, @RequestBody CreateProductInput createProductInput){
