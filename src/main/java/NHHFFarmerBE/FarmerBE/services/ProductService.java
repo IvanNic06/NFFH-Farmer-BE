@@ -23,8 +23,8 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public Product create(Product farmer){
-        return this.productRepository.save(farmer);
+    public Product create(Product product){
+        return this.productRepository.save(product);
     }
 
     @Override
@@ -35,9 +35,9 @@ public class ProductService implements IProductService{
 
     @Override
     public List<Product> findAll() {
-        List<Product> areaList = new ArrayList<>();
-        this.productRepository.findAll().forEach(areaList::add);
-        return areaList;
+        List<Product> productList = new ArrayList<>();
+        this.productRepository.findAll().forEach(productList::add);
+        return productList;
     }
 
     @Override

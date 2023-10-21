@@ -2,9 +2,11 @@ package NHHFFarmerBE.FarmerBE.controller;
 
 import NHHFFarmerBE.FarmerBE.entities.Farmer;
 import NHHFFarmerBE.FarmerBE.models.AreaPageProductResponse;
+import NHHFFarmerBE.FarmerBE.models.CreateProductResponse;
 import NHHFFarmerBE.FarmerBE.models.GetFarmerLightResponse;
 import NHHFFarmerBE.FarmerBE.models.LoginResponse;
 import NHHFFarmerBE.FarmerBE.models.SignupResponse;
+import NHHFFarmerBE.FarmerBE.models.verifytoken.VerifyHandler;
 import NHHFFarmerBE.FarmerBE.requests.CreateFarmerInput;
 import NHHFFarmerBE.FarmerBE.requests.LoginInput;
 import NHHFFarmerBE.FarmerBE.services.FarmerService;
@@ -35,6 +37,7 @@ public class FarmerController {
 
         return new ResponseEntity<>(new SignupResponse(createdFarmer), HttpStatus.CREATED);
     }
+    
 
     // GET ALL FARMERS
 
@@ -48,15 +51,19 @@ public class FarmerController {
     //  GET FARMER BY ID 
 
     @GetMapping("farmerFull/{id}")
-    public ResponseEntity<Farmer> getFarmerByIDFULL(@PathVariable int id) {
-        Optional<Farmer> farmer = farmerService.findById(id);
+    public ResponseEntity<Farmer> getFarmerByIDFULL(
+        @RequestHeader("token") String token, 
+        @PathVariable int id) {
 
-        if (farmer.isPresent()) {
-            return new ResponseEntity<>(farmer.get(), HttpStatus.OK);
+        VerifyHandler handler = new VerifyHandler(this.farmerService);
+        handler.verify(token);
+            
+        if(handler.isSuccess() && handler.getRole() != "admin") {
+            return new ResponseEntity<>(handler.getFarmer(), HttpStatus.OK);
         }
-
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
 
     @GetMapping("farmerLight/{id}")
     public ResponseEntity<GetFarmerLightResponse> getFarmerByIDLIGHT(@PathVariable int id) {

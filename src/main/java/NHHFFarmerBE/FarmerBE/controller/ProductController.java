@@ -51,38 +51,38 @@ public class ProductController {
 
     //Add a product
 
-    @PostMapping("/products")
+    @PostMapping("/product/add")
     public ResponseEntity<CreateProductResponse> createTask(
         @RequestHeader("token") String token,
         @RequestBody CreateProductInput createProductInput
         ) {
-
-            /*CreateProductResponse res = new CreateProductResponse(farmer.getUsername(), farmer.getUsername());
-            return new ResponseEntity<CreateProductResponse>(res, HttpStatus.OK);*/
         boolean error = false;
         VerifyHandler handler = new VerifyHandler(this.farmerService);
         handler.verify(token);
+
         if(!handler.isSuccess())
             error = true;
         if(!createProductInput.toProduct().getSeller().equals(handler.getFarmer().getUsername())) {
             error = true;
-        }        
-        if(!error) {
-            Product createdProduct = productService.create(createProductInput.toProduct());
-            CreateProductResponse response = new CreateProductResponse(
-                String.valueOf(createdProduct.getId()), 
-                createdProduct.getTitle()
-            );
-            return new ResponseEntity<CreateProductResponse>(response, HttpStatus.CREATED);
+        }
+
+        if(!error || handler.getRole().equals("admin")) {
+            return addProduct(createProductInput);
         } else {
             CreateProductResponse res = new CreateProductResponse("", "");
             res.setSuccess(false);
             return new ResponseEntity<CreateProductResponse>(res, HttpStatus.OK);
         }
-
     }
 
-
+    private ResponseEntity<CreateProductResponse> addProduct(CreateProductInput createProductInput) {
+        Product createdProduct = productService.create(createProductInput.toProduct());    
+        CreateProductResponse response = new CreateProductResponse(
+            String.valueOf(createdProduct.getId()), 
+            createdProduct.getTitle()
+        );
+        return new ResponseEntity<CreateProductResponse>(response, HttpStatus.CREATED);
+    }
 
     //Return all products
 
@@ -92,7 +92,7 @@ public class ProductController {
         return new ResponseEntity<>(ProductList, HttpStatus.OK);
     }
 
-    @GetMapping("/products/{id}")
+    @GetMapping("/product/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable int id) {
         Optional<Product> producttemp = productService.findById(id);
 
@@ -109,37 +109,48 @@ public class ProductController {
 
     //Delete a product using ID
 
-    @DeleteMapping("/products/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable int id) {
-        productService.delete(id);
+    @DeleteMapping("/product/{id}")
+    public ResponseEntity<ModifyProductResponse> deleteTask(
+        @RequestHeader("token") String token,
+        @PathVariable int id
+        ) {
 
-        return ResponseEntity.noContent().build();
+        boolean error = false;
+        VerifyHandler handler = new VerifyHandler(this.farmerService);
+        handler.verify(token);
+
+        if(!handler.isSuccess())
+            error = true;
+        if((!error) || handler.getRole().equals("admin")) {
+            productService.delete(id);
+            return new ResponseEntity<ModifyProductResponse>(
+                new ModifyProductResponse("", ""), HttpStatus.OK);
+        } else {
+            ModifyProductResponse res = new ModifyProductResponse("", "");
+            res.setSuccess(false);
+            return new ResponseEntity<ModifyProductResponse>(res, HttpStatus.OK);
+        }
     }
 
 
-    @GetMapping("/products")
+    @GetMapping("/product/findbyseller")
     public ResponseEntity<SellerPageProductResponse> getProductBySellerPage(@RequestParam String seller, int page){
         
         int pageSize = 1;
         List<Product> productList = productService.getProductBySeller(seller);
-
         if (productList.isEmpty()){
             return new ResponseEntity<SellerPageProductResponse>(null, null, HttpStatus.NOT_FOUND);
         }
 
         List<Product> SubList;
         int totalPageNumber = (int) Math.ceil((double) productList.size()/pageSize);
-
         if (page > totalPageNumber){
             return new ResponseEntity<SellerPageProductResponse>(null, null, HttpStatus.NOT_FOUND);
 
         }
-        
         if (page == totalPageNumber && totalPageNumber % pageSize != 0){
             SubList = productList.subList((page-1) * pageSize, page * pageSize - (page * pageSize - (productList.size() % pageSize)));
-        }
-
-        else{
+        } else{
             SubList = productList.subList((page-1) * pageSize, page * pageSize);
         }
 
@@ -151,18 +162,41 @@ public class ProductController {
     }
 
 
-    @PostMapping("/modifyproduct")
-    public ResponseEntity<ModifyProductResponse> modifyProductById(@RequestParam String id, @RequestBody CreateProductInput createProductInput){
+    @PostMapping("/product/modify/{id}")
+    public ResponseEntity<ModifyProductResponse> modifyProductById(
+        @RequestHeader("token") String token,
+        @PathVariable String id, 
+        @RequestBody CreateProductInput createProductInput){
         
+        boolean error = false;
+        VerifyHandler handler = new VerifyHandler(this.farmerService);
+        handler.verify(token);
+
+        if(!handler.isSuccess())
+            error = true;
+        if(!createProductInput.toProduct().getSeller().equals(handler.getFarmer().getUsername())) {
+            error = true;
+        }
+
+        if(!error || handler.getRole().equals("admin")) {
+            return modifyProductById(createProductInput, id);
+        } else {
+            ModifyProductResponse res = new ModifyProductResponse("", "");
+            res.setSuccess(false);
+            return new ResponseEntity<ModifyProductResponse>(res, HttpStatus.OK);
+        }
+    }
+    
+    public ResponseEntity<ModifyProductResponse> modifyProductById(
+        CreateProductInput createProductInput,
+        String id
+    ) {
+
         Product createdProduct = createProductInput.toProduct();
-
         int idString = Integer.valueOf(id);
-
         Optional<Product> optionalProduct = productService.findById(idString);
 
-
         if (optionalProduct.isPresent()){
-            
             Product product = optionalProduct.get();
             product.setTitle(createdProduct.getTitle());
             product.setSeller(createdProduct.getSeller());
@@ -173,16 +207,15 @@ public class ProductController {
             product.setAvailability(createdProduct.getAvailability());
 
             ModifyProductResponse response = new ModifyProductResponse(id, product.getTitle());
-            productService.create(product);
+            Product dbres = productService.create(product);
+            response.setSuccess(dbres != null);
             return new ResponseEntity<ModifyProductResponse>(response, HttpStatus.OK);
-        }
-
-        else{
-            ModifyProductResponse response = null;
+        } else{
+            ModifyProductResponse response = new ModifyProductResponse("", "");
+            response.setSuccess(false);
             return new ResponseEntity<ModifyProductResponse>(response, HttpStatus.NOT_MODIFIED);
         }
     }
-
 
 
 

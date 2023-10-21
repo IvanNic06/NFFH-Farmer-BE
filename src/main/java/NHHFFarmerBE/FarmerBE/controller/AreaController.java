@@ -1,8 +1,11 @@
 package NHHFFarmerBE.FarmerBE.controller;
 
 import NHHFFarmerBE.FarmerBE.entities.Area;
+import NHHFFarmerBE.FarmerBE.models.verifytoken.VerifyHandler;
+import NHHFFarmerBE.FarmerBE.repositories.FarmerRepository;
 import NHHFFarmerBE.FarmerBE.requests.CreateAreaInput;
 import NHHFFarmerBE.FarmerBE.services.AreaService;
+import NHHFFarmerBE.FarmerBE.services.FarmerService;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,18 +18,33 @@ public class AreaController {
     
     @Autowired
     public final AreaService areaService;
+    public final FarmerService farmerService;
+    public final FarmerRepository farmerRepository;
 
-    public AreaController(AreaService areaService){
+    public AreaController(
+        AreaService areaService, 
+        FarmerService farmerService,
+        FarmerRepository farmerRepository){
         this.areaService = areaService;
+        this.farmerService = farmerService;
+        this.farmerRepository = farmerRepository;
     }
 
-    //Add an area 
+    //NEW AREA
 
     @PostMapping("/area")
-    public ResponseEntity<Area> createArea(@RequestBody CreateAreaInput createTaskInput) {
-        Area createdArea = areaService.create(createTaskInput.toArea());
+    public ResponseEntity<Area> createArea(
+        @RequestHeader("token") String token, 
+        @RequestBody CreateAreaInput createTaskInput) {
 
-        return new ResponseEntity<>(createdArea, HttpStatus.CREATED);
+        VerifyHandler handler = new VerifyHandler(this.farmerService);
+        handler.verify(token);
+            
+        if(handler.isSuccess() && handler.getRole() != "admin") {
+            Area createdArea = areaService.create(createTaskInput.toArea());
+            return new ResponseEntity<>(createdArea, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 

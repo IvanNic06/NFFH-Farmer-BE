@@ -8,7 +8,7 @@ import NHHFFarmerBE.FarmerBE.entities.Product;
 
 public interface IProductService {
 
-    Product create(Product area);
+    Product create(Product product);
     
     List<Product> findAll();
     
