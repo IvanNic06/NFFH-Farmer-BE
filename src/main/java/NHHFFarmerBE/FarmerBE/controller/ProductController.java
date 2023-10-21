@@ -57,15 +57,22 @@ public class ProductController {
         @RequestBody CreateProductInput createProductInput
         ) {
 
+            /*CreateProductResponse res = new CreateProductResponse(farmer.getUsername(), farmer.getUsername());
+            return new ResponseEntity<CreateProductResponse>(res, HttpStatus.OK);*/
+        boolean error = false;
         VerifyHandler handler = new VerifyHandler(this.farmerService);
-        Farmer farmer = handler.verify(token);
-        
-        /*CreateProductResponse res = new CreateProductResponse(farmer.getUsername(), farmer.getUsername());
-        return new ResponseEntity<CreateProductResponse>(res, HttpStatus.OK);*/
-        
-        if(createProductInput.toProduct().getSeller().equals(farmer.getUsername())) {
+        handler.verify(token);
+        if(!handler.isSuccess())
+            error = true;
+        if(!createProductInput.toProduct().getSeller().equals(handler.getFarmer().getUsername())) {
+            error = true;
+        }        
+        if(!error) {
             Product createdProduct = productService.create(createProductInput.toProduct());
-            CreateProductResponse response = new CreateProductResponse(String.valueOf(createdProduct.getId()), createdProduct.getTitle());
+            CreateProductResponse response = new CreateProductResponse(
+                String.valueOf(createdProduct.getId()), 
+                createdProduct.getTitle()
+            );
             return new ResponseEntity<CreateProductResponse>(response, HttpStatus.CREATED);
         } else {
             CreateProductResponse res = new CreateProductResponse("", "");
