@@ -4,10 +4,12 @@ package NHHFFarmerBE.FarmerBE.controller;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import NHHFFarmerBE.FarmerBE.entities.Farmer;
 import NHHFFarmerBE.FarmerBE.entities.Product;
@@ -15,8 +17,13 @@ import NHHFFarmerBE.FarmerBE.models.AreaPageProductResponse;
 import NHHFFarmerBE.FarmerBE.models.CreateProductResponse;
 import NHHFFarmerBE.FarmerBE.models.ModifyProductResponse;
 import NHHFFarmerBE.FarmerBE.models.SellerPageProductResponse;
+import NHHFFarmerBE.FarmerBE.models.verifytoken.VerifyHandler;
+import NHHFFarmerBE.FarmerBE.models.verifytoken.VerifyTokenRequest;
+import NHHFFarmerBE.FarmerBE.models.verifytoken.VerifyTokenResponse;
 import NHHFFarmerBE.FarmerBE.requests.CreateProductInput;
+import NHHFFarmerBE.FarmerBE.services.FarmerService;
 import NHHFFarmerBE.FarmerBE.services.ProductService;
+import NHHFFarmerBE.FarmerBE.repositories.FarmerRepository;
 import NHHFFarmerBE.FarmerBE.repositories.ProductRepository;
 
 @RestController
@@ -25,28 +32,52 @@ public class ProductController {
     @Autowired
     public final ProductService productService;
     public final ProductRepository productrepo;
+    public final FarmerService farmerService;
+    public final FarmerRepository farmerRepository;
 
 
-    public ProductController(ProductService productService, ProductRepository productrepo){
+    public ProductController(
+        ProductService productService, 
+        ProductRepository productrepo,
+        FarmerService farmerService,
+        FarmerRepository farmerRepository
+    ){
         this.productService = productService;
         this.productrepo = productrepo;
+        this.farmerService = farmerService;
+        this.farmerRepository = farmerRepository;
     }
 
 
-    //Add an area 
+    //Add a product
 
     @PostMapping("/products")
-    public ResponseEntity<CreateProductResponse> createTask(@RequestBody CreateProductInput createProductInput) {
-        Product createdProduct = productService.create(createProductInput.toProduct());
+    public ResponseEntity<CreateProductResponse> createTask(
+        @RequestHeader("token") String token,
+        @RequestBody CreateProductInput createProductInput
+        ) {
 
-        CreateProductResponse response = new CreateProductResponse(String.valueOf(createdProduct.getId()), createdProduct.getTitle());
+        VerifyHandler handler = new VerifyHandler(this.farmerService);
+        Farmer farmer = handler.verify(token);
+        
+        /*CreateProductResponse res = new CreateProductResponse(farmer.getUsername(), farmer.getUsername());
+        return new ResponseEntity<CreateProductResponse>(res, HttpStatus.OK);*/
+        
+        if(createProductInput.toProduct().getSeller().equals(farmer.getUsername())) {
+            Product createdProduct = productService.create(createProductInput.toProduct());
+            CreateProductResponse response = new CreateProductResponse(String.valueOf(createdProduct.getId()), createdProduct.getTitle());
+            return new ResponseEntity<CreateProductResponse>(response, HttpStatus.CREATED);
+        } else {
+            CreateProductResponse res = new CreateProductResponse("", "");
+            res.setSuccess(false);
+            return new ResponseEntity<CreateProductResponse>(res, HttpStatus.OK);
+        }
 
-        return new ResponseEntity<CreateProductResponse>(response, HttpStatus.CREATED);
     }
 
 
 
-    //Return all areas
+    //Return all products
 
     @GetMapping("/allproducts")
     public ResponseEntity<List<Product>> allTasks() {
@@ -69,7 +100,7 @@ public class ProductController {
     }
 
 
-    //Delete an Area using ID
+    //Delete a product using ID
 
     @DeleteMapping("/products/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable int id) {
@@ -140,15 +171,11 @@ public class ProductController {
         }
 
         else{
-
             ModifyProductResponse response = null;
             return new ResponseEntity<ModifyProductResponse>(response, HttpStatus.NOT_MODIFIED);
-
         }
-
-
-
     }
+
 
 
 
