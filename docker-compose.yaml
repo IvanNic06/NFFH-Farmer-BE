@@ -2,9 +2,9 @@ version: '3.1'
 
 services:
 
-  mysqldb:
+  mysql-farmer:
     image: mysql:8.0.34
-    container_name: mysqldb   
+    container_name: mysql-farmer   
     volumes:
       - farmer-mysql-data:/var/lib/mysql
     environment:
@@ -20,11 +20,11 @@ services:
       args:
         APP_NAME: nffh-farmer-BE
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/Farmer
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-farmer:3306/Farmer
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
     depends_on:
-      - mysqldb
+      - mysql-farmer
     networks:
       - gateway
       - internal
