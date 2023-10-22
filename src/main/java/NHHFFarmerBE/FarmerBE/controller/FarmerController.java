@@ -58,7 +58,7 @@ public class FarmerController {
         VerifyHandler handler = new VerifyHandler(this.farmerService);
         handler.verify(token);
             
-        if(handler.isSuccess() && handler.getRole() != "admin") {
+        if(handler.isSuccess() && handler.getRole() == "admin") {
             return new ResponseEntity<>(handler.getFarmer(), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -78,7 +78,12 @@ public class FarmerController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        GetFarmerLightResponse response = new GetFarmerLightResponse(String.valueOf(farmer.getId()), farmer.getUsername(), farmer.getImage(), farmer.getArea(), farmer.getAddress());
+        GetFarmerLightResponse response = new GetFarmerLightResponse(
+            String.valueOf(farmer.getId()), 
+            farmer.getUsername(), 
+            farmer.getImage(), 
+            farmer.getArea(), 
+            farmer.getAddress());
 
         return new ResponseEntity<GetFarmerLightResponse>(response, HttpStatus.OK);
 
@@ -109,22 +114,14 @@ public class FarmerController {
 
         if (page > totalPageNumber){
             return new ResponseEntity<AreaPageProductResponse>(null, null, HttpStatus.NOT_FOUND);
-
         }
         
         if (page == totalPageNumber && totalPageNumber % pageSize != 0){
             SubList = farmerList.subList((page-1) * pageSize, page * pageSize - (page * pageSize - (farmerList.size() % pageSize)));
-        }
-        
-        else{
+        } else{
             SubList = farmerList.subList((page-1) * pageSize, page * pageSize);
         }
-
-
-        
-
         AreaPageProductResponse response = new AreaPageProductResponse(SubList, page, totalPageNumber);
-
         return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
@@ -132,44 +129,20 @@ public class FarmerController {
     @PostMapping("/farmer/signup")
     public ResponseEntity<Boolean> signUp(@RequestBody CreateFarmerInput createFarmerInput){
         
-        Farmer createdFarmer = createFarmerInput.toFarmer();
-        
+        Farmer createdFarmer = createFarmerInput.toFarmer(); 
         farmerService.create(createdFarmer);
-
         return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }
-
-    /*   SignUp
-      
-	    "username" : "Luciano_Moggi",
-        "email" : "arbitroChiuso@nelloSpogliatoio.com",
-        "password" : "Juventus <3",
-        "image" : "cazzo",
-        "area" : "torino",
-        "address" : "via ladri dio cane"
-	}
-     */
-
 
 
     @PostMapping("/farmer/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginInput email){
         
         String mail = email.ToStringEmail();
-
         Farmer farmer = farmerService.findByEmail(mail);
-
-        LoginResponse response = new LoginResponse(farmer.getPassword());
-        
+        LoginResponse response = new LoginResponse(farmer.getPassword()); 
         return new ResponseEntity<LoginResponse>(response, HttpStatus.OK);
 
-        }
-
-    /*  Login
-
-        {
-            "email" : "{mail}"
-        }
-    */
+    }
 }
 
