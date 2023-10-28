@@ -2,7 +2,6 @@ package NHHFFarmerBE.FarmerBE.controller;
 
 import NHHFFarmerBE.FarmerBE.entities.Farmer;
 import NHHFFarmerBE.FarmerBE.models.AreaPageProductResponse;
-import NHHFFarmerBE.FarmerBE.models.CreateProductResponse;
 import NHHFFarmerBE.FarmerBE.models.GetFarmerLightResponse;
 import NHHFFarmerBE.FarmerBE.models.LoginResponse;
 import NHHFFarmerBE.FarmerBE.models.SignupResponse;
@@ -33,9 +32,14 @@ public class FarmerController {
 
     @PostMapping("/farmer")
     public ResponseEntity<SignupResponse> createFarmer(@RequestBody CreateFarmerInput createFarmerInput) {
-        Farmer createdFarmer = farmerService.create(createFarmerInput.toFarmer());
+        SignupResponse response = new SignupResponse("", false);
+        
+        Farmer farmer = farmerService.create(createFarmerInput.toFarmer());
+        if (farmer != null) {
+            response = new SignupResponse(Integer.toString(farmer.getId()), true);
+        }
 
-        return new ResponseEntity<>(new SignupResponse(createdFarmer), HttpStatus.CREATED);
+        return new ResponseEntity<SignupResponse>(response, HttpStatus.OK);
     }
     
 
@@ -126,21 +130,20 @@ public class FarmerController {
         }
 
 
-    @PostMapping("/farmer/signup")
-    public ResponseEntity<Boolean> signUp(@RequestBody CreateFarmerInput createFarmerInput){
-        
-        Farmer createdFarmer = createFarmerInput.toFarmer(); 
-        farmerService.create(createdFarmer);
-        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
-    }
-
-
     @PostMapping("/farmer/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginInput email){
         
         String mail = email.ToStringEmail();
         Farmer farmer = farmerService.findByEmail(mail);
-        LoginResponse response = new LoginResponse(farmer); 
+        LoginResponse response = new LoginResponse("", "", "", false); 
+        if(farmer != null) {
+            response = new LoginResponse(
+                farmer.getPassword(), 
+                Integer.toString(farmer.getId()),
+                farmer.getUsername(), 
+                true
+            ); 
+        }
         return new ResponseEntity<LoginResponse>(response, HttpStatus.OK);
 
     }

@@ -1,10 +1,6 @@
 package NHHFFarmerBE.FarmerBE.requests;
 
-import java.util.Date;
-
-import NHHFFarmerBE.FarmerBE.entities.Area;
 import NHHFFarmerBE.FarmerBE.entities.Farmer;
-
 
 public record CreateFarmerInput(String username, String email, String password, String image, String area, String address) {
     public Farmer toFarmer() {

@@ -1,26 +1,23 @@
 package NHHFFarmerBE.FarmerBE.models;
 
-import NHHFFarmerBE.FarmerBE.entities.Farmer;
-
 public class SignupResponse {
-    private boolean success;
-    private String id;
 
+    private boolean success = false;
+    private String id;
+    
+    public SignupResponse(String id, boolean success) {
+        this.success = success;
+        this.id = id;
+    }
+    
     public String getId() {
         return id;
     }
-
+    
     public void setId(String id) {
         this.id = id;
     }
-
-    public SignupResponse(Farmer farmer) {
-        success = (farmer != null);
-        if(farmer != null) {
-            this.id = String.valueOf(farmer.getId());
-        }
-    }
-
+    
     public boolean isSuccess() {
         return success;
     }
