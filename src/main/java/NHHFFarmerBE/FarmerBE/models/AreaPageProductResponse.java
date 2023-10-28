@@ -6,22 +6,22 @@ import NHHFFarmerBE.FarmerBE.entities.Farmer;
 
 public class AreaPageProductResponse {
     
-    private List<Farmer> farmers;
+    private List<Farmer> stores;
     private int page;
     private int total;      //Total page number
     
-    public AreaPageProductResponse(List<Farmer> farmers, int page, int total){
-        this.farmers = farmers;
+    public AreaPageProductResponse(List<Farmer> stores, int page, int total){
+        this.stores = stores;
         this.page = page;
         this.total = total;
     }
     
     
-    public List<Farmer> getFarmers() {
-        return farmers;
+    public List<Farmer> getstores() {
+        return stores;
     }
-    public void setFarmers(List<Farmer> farmers) {
-        this.farmers = farmers;
+    public void setstores(List<Farmer> stores) {
+        this.stores = stores;
     }
     public int getPage() {
         return page;
