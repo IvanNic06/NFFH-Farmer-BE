@@ -120,7 +120,7 @@ public class FarmerController {
             return new ResponseEntity<AreaPageProductResponse>(null, null, HttpStatus.NOT_FOUND);
         }
         
-        if (page == totalPageNumber && totalPageNumber % pageSize != 0){
+        if ((page == totalPageNumber) && (totalPageNumber % pageSize != 0)){
             SubList = farmerList.subList((page-1) * pageSize, page * pageSize - (page * pageSize - (farmerList.size() % pageSize)));
         } else{
             SubList = farmerList.subList((page-1) * pageSize, page * pageSize);
