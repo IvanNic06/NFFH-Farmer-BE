@@ -136,7 +136,7 @@ public class ProductController {
     @GetMapping("/product/findbyseller")
     public ResponseEntity<SellerPageProductResponse> getProductBySellerPage(@RequestParam String seller, int page){
         
-        int pageSize = 1;
+        int pageSize = 12;
         List<Product> productList = productService.getProductBySeller(seller);
         if (productList.isEmpty()){
             return new ResponseEntity<SellerPageProductResponse>(null, null, HttpStatus.BAD_REQUEST);
