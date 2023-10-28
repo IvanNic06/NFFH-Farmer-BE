@@ -106,7 +106,7 @@ public class FarmerController {
     // FIND FARMER BY AREA
     @GetMapping("farmer/areas")
     public ResponseEntity<AreaPageProductResponse> getFarmerByAreaPage(@RequestParam String area, int page) {
-        int pageSize = 12;
+        int pageSize = 1;
         List<Farmer> farmerList = farmerService.findByArea(area);
 
         if (farmerList.isEmpty()){
