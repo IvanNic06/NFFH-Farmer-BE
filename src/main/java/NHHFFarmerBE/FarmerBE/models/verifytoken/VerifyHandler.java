@@ -33,8 +33,7 @@ public class VerifyHandler {
             this.role = res.getBody().getRole();
             if (!this.getRole().equals("admin")) {
                 this.farmer = this.farmerService.findByEmail(res.getBody().getEmail());
-            }
-            
+            } 
         }
     }
     

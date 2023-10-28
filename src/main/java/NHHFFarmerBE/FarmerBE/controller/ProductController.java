@@ -139,7 +139,7 @@ public class ProductController {
         int pageSize = 1;
         List<Product> productList = productService.getProductBySeller(seller);
         if (productList.isEmpty()){
-            return new ResponseEntity<SellerPageProductResponse>(null, null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<SellerPageProductResponse>(null, null, HttpStatus.BAD_REQUEST);
         }
 
         List<Product> SubList;
@@ -154,7 +154,6 @@ public class ProductController {
             SubList = productList.subList((page-1) * pageSize, page * pageSize);
         }
 
-        
 
         SellerPageProductResponse response = new SellerPageProductResponse(SubList, page, totalPageNumber);
 
@@ -205,6 +204,8 @@ public class ProductController {
             product.setPrice(createdProduct.getPrice());
             product.setWeight(createdProduct.getWeight());
             product.setAvailability(createdProduct.getAvailability());
+            product.setId(idString);
+
 
             ModifyProductResponse response = new ModifyProductResponse(id, product.getTitle());
             Product dbres = productService.create(product);
