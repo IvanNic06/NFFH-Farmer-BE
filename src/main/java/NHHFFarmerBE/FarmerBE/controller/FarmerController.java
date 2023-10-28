@@ -140,7 +140,7 @@ public class FarmerController {
         
         String mail = email.ToStringEmail();
         Farmer farmer = farmerService.findByEmail(mail);
-        LoginResponse response = new LoginResponse(farmer.getPassword()); 
+        LoginResponse response = new LoginResponse(farmer); 
         return new ResponseEntity<LoginResponse>(response, HttpStatus.OK);
 
     }
