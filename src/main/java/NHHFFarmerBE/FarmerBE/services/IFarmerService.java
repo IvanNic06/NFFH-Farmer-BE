@@ -17,5 +17,5 @@ public interface IFarmerService {
 
     Farmer findByEmail(String email);
 
-    Farmer findByUsername(String username);
+    Optional<Farmer> findByUsername(String username);
 }

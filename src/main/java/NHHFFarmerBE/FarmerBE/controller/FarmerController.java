@@ -70,8 +70,8 @@ public class FarmerController {
 
 
     @GetMapping("farmerLight/{id}")
-    public ResponseEntity<GetFarmerLightResponse> getFarmerByIDLIGHT(@PathVariable int id) {
-        Optional<Farmer> Optionalfarmer = farmerService.findById(id);
+    public ResponseEntity<GetFarmerLightResponse> getFarmerByIDLIGHT(@PathVariable String username) {
+        Optional<Farmer> Optionalfarmer = farmerService.findByUsername(username);
         Farmer farmer;
 
 

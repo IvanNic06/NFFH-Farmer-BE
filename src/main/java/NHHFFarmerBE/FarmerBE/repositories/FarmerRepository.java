@@ -2,6 +2,7 @@ package NHHFFarmerBE.FarmerBE.repositories;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,7 +19,7 @@ public interface FarmerRepository extends JpaRepository<Farmer, Integer> {
 
     Farmer findByemail(String email);
 
-    Farmer findByUsername(String username);
+    Optional<Farmer> findByUsername(String username);
 
 }
 

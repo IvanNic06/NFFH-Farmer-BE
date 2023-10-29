@@ -53,7 +53,7 @@ public class FarmerService implements IFarmerService{
         return farmerRepository.findByemail(email);
     }
 
-    public Farmer findByUsername(String username){
+    public Optional<Farmer> findByUsername(String username){
         return farmerRepository.findByUsername(username);
     }
 
