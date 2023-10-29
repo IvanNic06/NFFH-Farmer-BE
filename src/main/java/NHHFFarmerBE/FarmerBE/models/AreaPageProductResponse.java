@@ -17,10 +17,10 @@ public class AreaPageProductResponse {
     }
     
     
-    public List<Farmer> getstores() {
+    public List<Farmer> getStores() {
         return stores;
     }
-    public void setstores(List<Farmer> stores) {
+    public void setStores(List<Farmer> stores) {
         this.stores = stores;
     }
     public int getPage() {
