@@ -143,12 +143,12 @@ public class ProductController {
         }
 
         List<Product> SubList;
-        int totalPageNumber = (int) Math.ceil((double) productList.size()/pageSize);
+        int totalPageNumber = (int)Math.round((productList.size()/pageSize)+0.5);
         if (page > totalPageNumber){
             return new ResponseEntity<SellerPageProductResponse>(null, null, HttpStatus.NOT_FOUND);
 
         }
-        if (page == totalPageNumber && totalPageNumber % pageSize != 0){
+        if ((page == totalPageNumber) && (productList.size() % pageSize != 0)){
             SubList = productList.subList((page-1) * pageSize, page * pageSize - (page * pageSize - (productList.size() % pageSize)));
         } else{
             SubList = productList.subList((page-1) * pageSize, page * pageSize);
