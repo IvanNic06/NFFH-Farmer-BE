@@ -117,7 +117,8 @@ public class FarmerController {
         int totalPageNumber = (int) Math.ceil(farmerList.size()/pageSize);
 
         if (page > totalPageNumber){
-            return new ResponseEntity<AreaPageProductResponse>(null, null, HttpStatus.NOT_ACCEPTABLE);
+            AreaPageProductResponse res = new AreaPageProductResponse(farmerList, pageSize, totalPageNumber);
+            return new ResponseEntity<AreaPageProductResponse>(res, HttpStatus.NOT_ACCEPTABLE);
         }
         
         if ((page == totalPageNumber) && (farmerList.size() % pageSize != 0)){
