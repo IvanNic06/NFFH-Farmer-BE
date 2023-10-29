@@ -114,7 +114,9 @@ public class FarmerController {
         }
 
         List<Farmer> SubList;
-        int totalPageNumber = (int) Math.ceil(farmerList.size()/pageSize);
+        double totalPageNumbertemp = Math.ceil(farmerList.size()/pageSize);
+
+        int totalPageNumber = (int)totalPageNumbertemp;
 
         if (page > totalPageNumber){
             AreaPageProductResponse res = new AreaPageProductResponse(farmerList, pageSize, totalPageNumber);
